@@ -8,4 +8,4 @@ app.use(express.urlencoded({ extended: false }));
 
 require('../controllers/authController')(app);
 
-app.listen(3000);
+app.listen(3001);
