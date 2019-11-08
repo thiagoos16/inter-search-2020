@@ -59,6 +59,9 @@ router.put('/:projectId', async (req, res) => {
             description
         }, { new: true });
 
+        project.tasks = [];
+        await Task.remove({ project: project._id});
+
         await Promise.all(tasks.map(async task => {
             const projectTask = new Task({ ...task, project: project._id })
 
@@ -71,7 +74,8 @@ router.put('/:projectId', async (req, res) => {
 
         return res.send({ project });
     } catch (err) {
-        return res.status(400).send({ error: 'Error creating new project' });
+        console.log(err);
+        return res.status(400).send({ error: 'Error Updating new project' });
     }
 });
 
