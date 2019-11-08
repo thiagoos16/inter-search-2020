@@ -9,7 +9,7 @@ const mailer = require('../../modules/mailer');
 const authConfig = require('../../config/auth.json');
 
 function generateToken(params = {}) {
-    return jwt.sign({ params }, authConfig.secret, {
+    return jwt.sign(params, authConfig.secret, {
         expiresIn: 86400,
     });
 }
