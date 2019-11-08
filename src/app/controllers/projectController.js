@@ -10,7 +10,7 @@ router.use(authMiddleware);
 
 router.get('/', async (req, res) => {
     try {
-        const projects = await Project.find().populate('user');
+        const projects = await Project.find().populate(['user', 'tasks']);
 
         return res.send({ projects });
     } catch (err) {
@@ -51,7 +51,28 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:projectId', async (req, res) => {
-    res.send({ user: req.userId });
+    try {
+        const { title, description, tasks } = req.body;
+
+        const project = await Project.findByIdAndUpdate(req.params.projectId, { 
+            title,
+            description
+        }, { new: true });
+
+        await Promise.all(tasks.map(async task => {
+            const projectTask = new Task({ ...task, project: project._id })
+
+            await projectTask.save();
+
+            project.tasks.push(projectTask);
+        }));
+
+        await project.save();
+
+        return res.send({ project });
+    } catch (err) {
+        return res.status(400).send({ error: 'Error creating new project' });
+    }
 });
 
 router.delete('/:projectId', async (req, res) => {
